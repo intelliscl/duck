@@ -265,6 +265,7 @@
     "sqlite",
     "sqlite-orm",
     "sql-server",
-    "sql-server-orm"
+    "sql-server-orm",
+    "duckdb"
   ]
 }
