@@ -940,49 +940,6 @@ export class DuckDBQueryRunner implements QueryRunner {
     }
 
     /**
-     * Enables special query runner mode to work with migrations
-     */
-    enableSqlMemory(): void {
-        // Not needed for DuckDB
-    }
-
-    /**
-     * Disables special query runner mode
-     */
-    disableSqlMemory(): void {
-        // Not needed for DuckDB
-    }
-
-    /**
-     * Flushes all memorized SQL queries
-     */
-    async clearSqlMemory(): Promise<void> {
-        // Not needed for DuckDB
-    }
-
-    /**
-     * Returns SQL queries stored in memory
-     */
-    getMemorySql(): Query[] {
-        // Not needed for DuckDB
-        return []
-    }
-
-    /**
-     * Executes SQL queries in parameters
-     */
-    async executeMemoryUpSql(): Promise<void> {
-        // Not needed for DuckDB
-    }
-
-    /**
-     * Executes SQL queries in parameters
-     */
-    async executeMemoryDownSql(): Promise<void> {
-        // Not needed for DuckDB
-    }
-
-    /**
      * Gets table from database
      */
     async getTable(tableName: string): Promise<Table | undefined> {
