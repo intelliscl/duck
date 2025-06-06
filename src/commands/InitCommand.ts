@@ -1,10 +1,10 @@
-import ansi from "ansis"
+import { CommandUtils } from "./CommandUtils"
+import * as path from "path"
+import * as yargs from "yargs"
+import chalk from "chalk"
 import { exec } from "child_process"
-import path from "path"
-import yargs from "yargs"
 import { TypeORMError } from "../error"
 import { PlatformTools } from "../platform/PlatformTools"
-import { CommandUtils } from "./CommandUtils"
 
 /**
  * Generates a new project with TypeORM.
@@ -125,24 +125,26 @@ export class InitCommand implements yargs.CommandModule {
 
             if (args.name) {
                 console.log(
-                    ansi.green`Project created inside ${ansi.blue(
-                        basePath,
-                    )} directory.`,
+                    chalk.green(
+                        `Project created inside ${chalk.blue(
+                            basePath,
+                        )} directory.`,
+                    ),
                 )
             } else {
                 console.log(
-                    ansi.green`Project created inside current directory.`,
+                    chalk.green(`Project created inside current directory.`),
                 )
             }
 
-            console.log(ansi.green`Please wait, installing dependencies...`)
+            console.log(chalk.green(`Please wait, installing dependencies...`))
             if (args.pm && installNpm) {
                 await InitCommand.executeCommand("npm install", basePath)
             } else {
                 await InitCommand.executeCommand("yarn install", basePath)
             }
 
-            console.log(ansi.green`Done! Start playing with a new project!`)
+            console.log(chalk.green(`Done! Start playing with a new project!`))
         } catch (err) {
             PlatformTools.logCmdErr("Error during project initialization:", err)
             process.exit(1)
@@ -196,6 +198,10 @@ export class InitCommand implements yargs.CommandModule {
             case "better-sqlite3":
                 dbSettings = `type: "better-sqlite3",
     database: "database.sqlite",`
+                break
+            case "duckdb":
+                dbSettings = `type: "duckdb",
+    database: "database.duckdb",`
                 break
             case "postgres":
                 dbSettings = `type: "postgres",
@@ -280,8 +286,8 @@ export const AppDataSource = new DataSource({
             return JSON.stringify(
                 {
                     compilerOptions: {
-                        lib: ["es2021"],
-                        target: "es2021",
+                        lib: ["es5", "es6"],
+                        target: "es5",
                         module: "commonjs",
                         moduleResolution: "node",
                         outDir: "./build",
@@ -548,10 +554,11 @@ AppDataSource.initialize().then(async () => {
     protected static getDockerComposeTemplate(database: string): string {
         switch (database) {
             case "mysql":
-                return `services:
+                return `version: '3'
+services:
 
   mysql:
-    image: "mysql:9.2.0"
+    image: "mysql:8.0.30"
     ports:
       - "3306:3306"
     environment:
@@ -562,10 +569,11 @@ AppDataSource.initialize().then(async () => {
 
 `
             case "mariadb":
-                return `services:
+                return `version: '3'
+services:
 
   mariadb:
-    image: "mariadb:11.7.2"
+    image: "mariadb:10.8.4"
     ports:
       - "3306:3306"
     environment:
@@ -576,10 +584,11 @@ AppDataSource.initialize().then(async () => {
 
 `
             case "postgres":
-                return `services:
+                return `version: '3'
+services:
 
   postgres:
-    image: "postgres:17.2"
+    image: "postgres:14.5"
     ports:
       - "5432:5432"
     environment:
@@ -589,10 +598,11 @@ AppDataSource.initialize().then(async () => {
 
 `
             case "cockroachdb":
-                return `services:
+                return `version: '3'
+services:
 
   cockroachdb:
-    image: "cockroachdb/cockroach:v25.1.2"
+    image: "cockroachdb/cockroach:v22.1.6"
     command: start --insecure
     ports:
       - "26257:26257"
@@ -600,7 +610,8 @@ AppDataSource.initialize().then(async () => {
 `
             case "sqlite":
             case "better-sqlite3":
-                return `services:
+                return `version: '3'
+services:
 `
             case "oracle":
                 throw new TypeORMError(
@@ -608,10 +619,11 @@ AppDataSource.initialize().then(async () => {
                 ) // todo: implement for oracle as well
 
             case "mssql":
-                return `services:
+                return `version: '3'
+services:
 
   mssql:
-    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    image: "microsoft/mssql-server-linux:rc2"
     ports:
       - "1433:1433"
     environment:
@@ -620,20 +632,22 @@ AppDataSource.initialize().then(async () => {
 
 `
             case "mongodb":
-                return `services:
+                return `version: '3'
+services:
 
   mongodb:
-    image: "mongo:8.0.5"
+    image: "mongo:5.0.12"
     container_name: "typeorm-mongodb"
     ports:
       - "27017:27017"
 
 `
             case "spanner":
-                return `services:
+                return `version: '3'
+services:
 
   spanner:
-    image: gcr.io/cloud-spanner-emulator/emulator:1.5.30
+    image: gcr.io/cloud-spanner-emulator/emulator:1.4.1
     ports:
       - "9010:9010"
       - "9020:9020"
@@ -679,55 +693,53 @@ Steps to run this project:
         const packageJson = JSON.parse(packageJsonContents)
 
         if (!packageJson.devDependencies) packageJson.devDependencies = {}
-        packageJson.devDependencies = {
-            "@types/node": "^22.13.10",
-            "ts-node": "^10.9.2",
-            typescript: "^5.8.2",
-            ...packageJson.devDependencies,
-        }
+        Object.assign(packageJson.devDependencies, {
+            "ts-node": "10.9.1",
+            "@types/node": "^16.11.10",
+            typescript: "4.5.2",
+        })
 
         if (!packageJson.dependencies) packageJson.dependencies = {}
-        packageJson.dependencies = {
-            ...packageJson.dependencies,
-            "reflect-metadata": "^0.2.2",
+        Object.assign(packageJson.dependencies, {
             typeorm:
                 require("../package.json").version !== "0.0.0"
                     ? require("../package.json").version // install version from package.json if present
                     : require("../package.json").installFrom, // else use custom source
-        }
+            "reflect-metadata": "^0.1.13",
+        })
 
         switch (database) {
             case "mysql":
             case "mariadb":
-                packageJson.dependencies["mysql2"] = "^3.14.0"
+                packageJson.dependencies["mysql"] = "^2.14.1"
                 break
             case "postgres":
             case "cockroachdb":
-                packageJson.dependencies["pg"] = "^8.14.1"
+                packageJson.dependencies["pg"] = "^8.4.0"
                 break
             case "sqlite":
-                packageJson.dependencies["sqlite3"] = "^5.1.7"
+                packageJson.dependencies["sqlite3"] = "^5.0.2"
                 break
             case "better-sqlite3":
-                packageJson.dependencies["better-sqlite3"] = "^8.7.0"
+                packageJson.dependencies["better-sqlite3"] = "^7.0.0"
                 break
             case "oracle":
-                packageJson.dependencies["oracledb"] = "^6.8.0"
+                packageJson.dependencies["oracledb"] = "^5.1.0"
                 break
             case "mssql":
-                packageJson.dependencies["mssql"] = "^10.0.4"
+                packageJson.dependencies["mssql"] = "^9.1.1"
                 break
             case "mongodb":
-                packageJson.dependencies["mongodb"] = "^6.15.0"
+                packageJson.dependencies["mongodb"] = "^5.2.0"
                 break
             case "spanner":
-                packageJson.dependencies["@google-cloud/spanner"] = "^7.19.1 "
+                packageJson.dependencies["@google-cloud/spanner"] = "^5.18.0"
                 break
         }
 
         if (express) {
-            packageJson.dependencies["express"] = "^4.21.2"
-            packageJson.dependencies["body-parser"] = "^1.20.3"
+            packageJson.dependencies["express"] = "^4.17.2"
+            packageJson.dependencies["body-parser"] = "^1.19.1"
         }
 
         if (!packageJson.scripts) packageJson.scripts = {}

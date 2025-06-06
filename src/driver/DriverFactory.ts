@@ -5,12 +5,13 @@ import { SqlServerDriver } from "./sqlserver/SqlServerDriver"
 import { OracleDriver } from "./oracle/OracleDriver"
 import { SqliteDriver } from "./sqlite/SqliteDriver"
 import { CordovaDriver } from "./cordova/CordovaDriver"
+import { DuckDBDriver } from "./duckdb/DuckDBDriver"
 import { ReactNativeDriver } from "./react-native/ReactNativeDriver"
 import { NativescriptDriver } from "./nativescript/NativescriptDriver"
 import { SqljsDriver } from "./sqljs/SqljsDriver"
 import { MysqlDriver } from "./mysql/MysqlDriver"
 import { PostgresDriver } from "./postgres/PostgresDriver"
-import { ExpoDriverFactory } from "./expo/ExpoDriverFactory"
+import { ExpoDriver } from "./expo/ExpoDriver"
 import { AuroraMysqlDriver } from "./aurora-mysql/AuroraMysqlDriver"
 import { AuroraPostgresDriver } from "./aurora-postgres/AuroraPostgresDriver"
 import { Driver } from "./Driver"
@@ -46,6 +47,8 @@ export class DriverFactory {
                 return new BetterSqlite3Driver(connection)
             case "cordova":
                 return new CordovaDriver(connection)
+            case "duckdb":
+                return new DuckDBDriver(connection);
             case "nativescript":
                 return new NativescriptDriver(connection)
             case "react-native":
@@ -59,7 +62,7 @@ export class DriverFactory {
             case "mongodb":
                 return new MongoDriver(connection)
             case "expo":
-                return new ExpoDriverFactory(connection).create()
+                return new ExpoDriver(connection)
             case "aurora-mysql":
                 return new AuroraMysqlDriver(connection)
             case "aurora-postgres":
@@ -76,6 +79,7 @@ export class DriverFactory {
                     "capacitor",
                     "cockroachdb",
                     "cordova",
+                    "duckdb",
                     "expo",
                     "mariadb",
                     "mongodb",

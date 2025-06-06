@@ -11,6 +11,7 @@ export type PrimaryGeneratedColumnType =
     | "smallint" // mysql, postgres, mssql, oracle, sqlite, cockroachdb, sap
     | "mediumint" // mysql, sqlite
     | "bigint" // mysql, postgres, mssql, sqlite, cockroachdb, sap
+    | "hugeint" //duckdb
     | "dec" // oracle, mssql, sap
     | "decimal" // mysql, postgres, mssql, sqlite, sap
     | "smalldecimal" // sap
@@ -51,6 +52,10 @@ export type WithPrecisionColumnType =
     | "timestamp without time zone" // postgres, cockroachdb
     | "timestamp with time zone" // postgres, oracle, cockroachdb
     | "timestamp with local time zone" // oracle
+    | "timestamp_ms" //duckdb
+    | "timestamp_ns" //duckdb
+    | "timestamp_s" //duckdb
+    | "timestamtz" //duckdb
 
 /**
  * Column types where column length is used.
@@ -80,8 +85,13 @@ export type WithWidthColumnType =
     | "tinyint" // mysql
     | "smallint" // mysql
     | "mediumint" // mysql
-    | "int" // mysql
-    | "bigint" // mysql
+    | "int" // mysql, duckdb
+    | "bigint" // mysql, duckdb
+    | "ubigint" //duckdb
+    | "uint"
+    | "usmallint"
+    | "utinyint"
+
 
 /**
  * All other regular column types.
@@ -107,7 +117,7 @@ export type SimpleColumnType =
     | "money" // postgres, mssql
 
     // boolean types
-    | "boolean" // postgres, sqlite, mysql, cockroachdb
+    | "boolean" // postgres, sqlite, mysql, cockroachdb, duckdb
     | "bool" // postgres, mysql, cockroachdb, spanner
 
     // text/binary types
@@ -115,7 +125,7 @@ export type SimpleColumnType =
     | "tinytext" // mysql
     | "mediumblob" // mysql
     | "mediumtext" // mysql
-    | "blob" // mysql, oracle, sqlite, cockroachdb, sap
+    | "blob" // mysql, oracle, sqlite, cockroachdb, sap, duckdb
     | "text" // mysql, postgres, mssql, sqlite, cockroachdb, sap
     | "ntext" // mssql
     | "citext" // postgres
@@ -135,7 +145,10 @@ export type SimpleColumnType =
     | "image" // mssql
 
     // date types
-    | "timetz" // postgres
+    | "timetz" // postgres, duckdb
+    | "time with time zone" // duckdb
+    | "time without time zone" // duckdb
+    | "time" //duckdb
     | "timestamptz" // postgres, cockroachdb
     | "timestamp with local time zone" // oracle
     | "smalldatetime" // mssql
@@ -181,15 +194,15 @@ export type SimpleColumnType =
     | "datemultirange" // postgres
 
     // other types
-    | "enum" // mysql, postgres
+    | "enum" // mysql, postgres, duckdb
     | "set" // mysql
     | "cidr" // postgres
     | "inet" // postgres, cockroachdb
     | "inet4" // mariadb
     | "inet6" // mariadb
     | "macaddr" // postgres
-    | "macaddr8" // postgres
     | "bit" // postgres, mssql
+    | "bitstring" //duckdb
     | "bit varying" // postgres
     | "varbit" // postgres
     | "tsvector" // postgres
@@ -205,9 +218,20 @@ export type SimpleColumnType =
     | "urowid" // oracle
     | "uniqueidentifier" // mssql
     | "rowversion" // mssql
-    | "array" // cockroachdb, sap, spanner
+    | "array" // cockroachdb, sap, spanner,duckdb
     | "cube" // postgres
     | "ltree" // postgres
+    | "hugeint" //duckdb
+    | "list" //duckdb
+    | "map" //duckdb
+    | "struct" //duckdb
+    | "union" //duckdb
+    | "unsigned big int" //duckdb
+    | "int array" //duckdb
+    | "bigint array"   //duckdb
+    | "smallint array" //duckdb
+    | "text array" //duckdb
+
 
 /**
  * Any column type column can be.
